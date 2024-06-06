@@ -11,6 +11,9 @@
 #include <iostream>
 #include <stdio.h>
 #include <math.h>
+#include <string>
+#include <fstream>
+#include <vector>
 
 using namespace std;
 
@@ -23,35 +26,81 @@ using namespace std;
 
 // The world map
 
-const int MAP_WIDTH = 20;
-const int MAP_HEIGHT = 20;
+int MAP_WIDTH, MAP_HEIGHT;
 
-int world_map[ MAP_WIDTH * MAP_HEIGHT ] = 
+int* world_map;
+
+// int world_map[ MAP_WIDTH * MAP_HEIGHT ] = 
+// {
+// // 0001020304050607080910111213141516171819
+// 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,   // 00
+// 	1,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,1,   // 01
+// 	1,9,9,1,1,9,9,9,1,9,1,9,1,9,1,9,9,9,1,1,   // 02
+// 	1,9,9,1,1,9,9,9,1,9,1,9,1,9,1,9,9,9,1,1,   // 03
+// 	1,9,1,1,1,1,9,9,1,9,1,9,1,1,1,1,9,9,1,1,   // 04
+// 	1,9,1,1,9,1,1,1,1,9,1,1,1,1,9,1,1,1,1,1,   // 05
+// 	1,9,9,9,9,1,1,1,1,1,1,9,9,9,9,1,1,1,1,1,   // 06
+// 	1,9,9,9,9,9,9,9,9,1,1,1,9,9,9,9,9,9,9,1,   // 07
+// 	1,9,1,1,1,1,1,1,1,1,1,9,1,1,1,1,1,1,1,1,   // 08
+// 	1,9,1,9,9,9,9,9,9,9,1,1,9,9,9,9,9,9,9,1,   // 09
+// 	1,9,1,1,1,1,9,1,1,9,1,1,1,1,1,1,1,1,1,1,   // 10
+// 	1,9,9,9,9,9,1,9,1,9,1,9,9,9,9,9,1,1,1,1,   // 11
+// 	1,9,1,9,1,9,9,9,1,9,1,9,1,9,1,9,9,9,1,1,   // 12
+// 	1,9,1,9,1,9,9,9,1,9,1,9,1,9,1,9,9,9,1,1,   // 13
+// 	1,9,1,1,1,1,9,9,1,9,1,9,1,1,1,1,9,9,1,1,   // 14
+// 	1,9,1,1,9,1,1,1,1,9,1,1,1,1,9,1,1,1,1,1,   // 15
+// 	1,9,9,9,9,1,1,1,1,1,1,9,9,9,9,1,1,1,1,1,   // 16
+// 	1,1,9,9,9,9,9,9,9,1,1,1,9,9,9,1,9,9,9,9,   // 17
+// 	1,9,1,1,1,1,1,1,1,1,1,9,1,1,1,1,1,1,1,1,   // 18
+// 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,   // 19
+// };
+
+int ReadMapFromFile(string mapFilepPath)
 {
+	ifstream mapFile(mapFilepPath);
+	if(!mapFile.is_open())
+	{
+		cout << "Error opening file: " << mapFilepPath << endl;
+		return 1;
+	}
 
-// 0001020304050607080910111213141516171819
-	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,   // 00
-	1,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,1,   // 01
-	1,9,9,1,1,9,9,9,1,9,1,9,1,9,1,9,9,9,1,1,   // 02
-	1,9,9,1,1,9,9,9,1,9,1,9,1,9,1,9,9,9,1,1,   // 03
-	1,9,1,1,1,1,9,9,1,9,1,9,1,1,1,1,9,9,1,1,   // 04
-	1,9,1,1,9,1,1,1,1,9,1,1,1,1,9,1,1,1,1,1,   // 05
-	1,9,9,9,9,1,1,1,1,1,1,9,9,9,9,1,1,1,1,1,   // 06
-	1,9,9,9,9,9,9,9,9,1,1,1,9,9,9,9,9,9,9,1,   // 07
-	1,9,1,1,1,1,1,1,1,1,1,9,1,1,1,1,1,1,1,1,   // 08
-	1,9,1,9,9,9,9,9,9,9,1,1,9,9,9,9,9,9,9,1,   // 09
-	1,9,1,1,1,1,9,1,1,9,1,1,1,1,1,1,1,1,1,1,   // 10
-	1,9,9,9,9,9,1,9,1,9,1,9,9,9,9,9,1,1,1,1,   // 11
-	1,9,1,9,1,9,9,9,1,9,1,9,1,9,1,9,9,9,1,1,   // 12
-	1,9,1,9,1,9,9,9,1,9,1,9,1,9,1,9,9,9,1,1,   // 13
-	1,9,1,1,1,1,9,9,1,9,1,9,1,1,1,1,9,9,1,1,   // 14
-	1,9,1,1,9,1,1,1,1,9,1,1,1,1,9,1,1,1,1,1,   // 15
-	1,9,9,9,9,1,1,1,1,1,1,9,9,9,9,1,1,1,1,1,   // 16
-	1,1,9,9,9,9,9,9,9,1,1,1,9,9,9,1,9,9,9,9,   // 17
-	1,9,1,1,1,1,1,1,1,1,1,9,1,1,1,1,1,1,1,1,   // 18
-	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,   // 19
+	string line;
+	int width, height;
+	while (getline(mapFile, line))
+	{
+		if (line.find("height") != string::npos){
+			cout<<line<<endl;
+			cout<<line.find(" ")<<endl;
+			cout<<line.substr(line.find(" ") + 1)<<endl;
+			width = stoi(line.substr(line.find(" ") + 1));
+		}
+		else if (line.find("width") != string::npos){
+			height = stoi(line.substr(line.find(" ") + 1));
+		}
+		else if (line.find("map") != string::npos){
+			break;
+		}
+	}
+	MAP_WIDTH = width;
+	MAP_HEIGHT = height;
+	world_map = new int[MAP_WIDTH * MAP_HEIGHT];
 
-};
+	int row = 0;
+	while (getline(mapFile, line)&& row < MAP_HEIGHT) {
+		for (int col =0; col < MAP_WIDTH; col++){
+			if (line[col] =='@')
+				world_map[row * (MAP_WIDTH) + col] = 9;
+			else if (line[col] =='.')
+				world_map[row * (MAP_WIDTH) + col] = 1;
+			else 
+				world_map[row * (MAP_WIDTH) + col] = 0;
+		}
+		row++;
+	}
+	mapFile.close();
+	return 0;
+}
+
 
 // map helper functions
 
@@ -220,7 +269,7 @@ int main( int argc, char *argv[] )
 {
 
 	cout << "STL A* Search implementation\n(C)2001 Justin Heyes-Jones\n";
-
+	ReadMapFromFile("/mnt/Topics/Learning/MAPF/LocalHeuristics/map/random-32-32-10.map");
 	// Our sample problem defines the world as a 2d array representing a terrain
 	// Each element contains an integer from 0 to 5 which indicates the cost 
 	// of travel across the terrain. Zero means the least possible difficulty 
@@ -239,14 +288,21 @@ int main( int argc, char *argv[] )
 	{
 
 		// Create a start state
-		MapSearchNode nodeStart;
+		
 		nodeStart.x = rand()%MAP_WIDTH;
 		nodeStart.y = rand()%MAP_HEIGHT; 
+
+		//set (5,6)
+		nodeStart.x = 5;
+		nodeStart.y = 6;
 
 		// Define the goal state
 		MapSearchNode nodeEnd;
 		nodeEnd.x = rand()%MAP_WIDTH;						
 		nodeEnd.y = rand()%MAP_HEIGHT; 
+
+		nodeEnd.x = 31;
+		nodeEnd.y = 31;
 		
 		// Set Start and goal states
 		
