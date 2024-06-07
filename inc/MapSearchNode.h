@@ -34,7 +34,7 @@ public:
 	int GetMap( int x, int y );
 
 	void PrintNodeInfo(); 
-
+	void GetNodeInfo(int *x, int *y);
 
 };
 

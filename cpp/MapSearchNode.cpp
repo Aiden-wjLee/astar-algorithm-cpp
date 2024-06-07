@@ -30,6 +30,12 @@ void MapSearchNode::PrintNodeInfo()
 
 	cout << str;
 }
+void MapSearchNode::GetNodeInfo(int *node_x, int *node_y)
+{
+	*node_x = x;
+	*node_y = y;
+}
+
 
 // Here's the heuristic function that estimates the distance from a Node
 // to the Goal. 
